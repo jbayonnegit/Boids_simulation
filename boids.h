@@ -32,8 +32,9 @@ typedef	enum s_boolean
 
 void		free_glb(t_global *glb);
 t_boolean	window_initialisation(t_global *glb);
-t_boolean	boids_random_init(t_boid **boids);
+t_boid		**boids_random_init(void);
 void		boid_update_rand(t_boid **boids);
-
+void		free_boids_init(t_boid **boids, int i);
+void		window_clear(t_global *glb);
 
 #endif

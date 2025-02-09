@@ -16,4 +16,5 @@ t_boolean	window_initialisation(t_global *glb)
 		free(glb);
 		return (false);
 	}
+	return (true);
 }
