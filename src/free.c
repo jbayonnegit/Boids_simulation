@@ -31,7 +31,7 @@ void	free_glb(t_global *glb)
 
 void	window_clear(t_global *glb)
 {
-	free_glb(glb);
+	free_boids(glb->boids);
 	SDL_DestroyRenderer(glb->renderer);
 	SDL_DestroyWindow(glb->window);
 	free(glb);

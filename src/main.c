@@ -4,7 +4,11 @@ void	refresh(t_global *glb)
 {
 	SDL_SetRenderDrawColor(glb->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(glb->renderer);
-	SDL_Delay(3000);
+	SDL_SetRenderDrawColor(glb->renderer, 220, 255, 255, 255);
+	boid_update_rand(glb->boids);
+	draw_boids(glb->boids, glb->renderer);
+	SDL_RenderPresent(glb->renderer);
+	SDL_Delay(5);
 }
 
 void	run(t_global *glb)
@@ -15,6 +19,7 @@ void	run(t_global *glb)
 	run = true;
 	while (run)
 	{
+
 		refresh(glb);
 		while(SDL_PollEvent(&event))
 		{
@@ -45,5 +50,5 @@ int	main(int argc, char **argv){
 	if (!window_initialisation(glb))
 		return (-1);
 	run(glb);
-	free_glb(glb);
+	return (0);
 }

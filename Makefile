@@ -14,12 +14,12 @@ SRCS = $(addprefix $(SRC_DIR)/, $(SRC))
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
 				@mkdir -p $(OBJ_DIR)
-				$(CC) $(CFLAGS) -I.  -fsanitize=address -lasan -g -c $< -o $@
+				$(CC) $(CFLAGS) -I. -fsanitize=address -lasan -g3 -c $< -o $@
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-		$(CC) $(OBJS) -o $(NAME) $(CFLAGS) -lSDL2 -fsanitize=address -g
+		$(CC) $(OBJS) -o $(NAME) $(CFLAGS) -lSDL2 -fsanitize=address -g3 -lm
 
 clean :
 		rm -f -r $(OBJ_DIR)

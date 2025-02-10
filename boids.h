@@ -24,6 +24,13 @@ typedef struct s_global
 	SDL_Renderer	*renderer;
 }				t_global;
 
+typedef struct s_triangle
+{
+	SDL_Point p1;
+	SDL_Point p2;
+	SDL_Point p3;
+}				t_triangle;
+
 typedef	enum s_boolean
 {
 	false,
@@ -36,5 +43,7 @@ t_boid		**boids_random_init(void);
 void		boid_update_rand(t_boid **boids);
 void		free_boids_init(t_boid **boids, int i);
 void		window_clear(t_global *glb);
+void		draw_boids(t_boid **boids, SDL_Renderer *renderer);
+void		boid_update_rand(t_boid **boids);
 
 #endif
