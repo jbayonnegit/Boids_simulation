@@ -1,5 +1,6 @@
 #ifndef BOIDS_H
 # define BOIDS_H
+
 # define V_MAX 5
 # define NB_BOIDS 500
 # define HEIGHT 720
@@ -31,6 +32,18 @@ typedef struct s_triangle
 	SDL_Point p3;
 }				t_triangle;
 
+typedef struct s_view
+{
+	float	distance;
+	float	angle;
+}				t_view;
+
+typedef struct s_nb_in_view
+{
+	int					n;
+	struct s_nb_in_view *next;
+}				t_nb_view;
+
 typedef	enum s_boolean
 {
 	false,
@@ -45,5 +58,9 @@ void		free_boids_init(t_boid **boids, int i);
 void		window_clear(t_global *glb);
 void		draw_boids(t_boid **boids, SDL_Renderer *renderer);
 void		boid_update_rand(t_boid **boids);
+float		float_rand(void);
+float 		rand_float_range(float a, float b);
+t_nb_view	*new_node(int j);
+void		add_back(t_nb_view *head, t_nb_view *new);
 
 #endif

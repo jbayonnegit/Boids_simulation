@@ -1,15 +1,5 @@
 #include "boids.h"
 
-float	float_rand(void){
-	
-	return (float)rand() / (float)RAND_MAX;
-}
-
-float rand_float_range(float a, float b) {
-   
-    return a + (b - a) * ((float)rand() / (float)RAND_MAX);
-}
-
 t_boid	**boids_malloc(void){
 
 	t_boid **boids;
@@ -51,6 +41,32 @@ t_boid	**boids_random_init(void){
 	return (boids);
 }
 
+t_nb_view	*boid_in_view(t_boid **boids, int i, int *nb, t_view field){
+
+	t_nb_view	*nb_v;
+	t_nb_view	*head;
+	int			j;
+	float		d;
+	float		angle;
+	
+	j = 0;
+	head = NULL;
+	nb_v = NULL;
+	while (boids[j])
+	{
+		if (j == i)
+			j++;
+		d = sqrtf(powf(boids[j]->x, 2) + powf(boids[j]->y, 2));
+		if (d <= field.distance)
+		{
+			nb_v = new_node(j);
+			add_back(head, nb_v);
+		}
+		j++;
+	}
+	return (head);
+}
+
 void	boid_update_rand(t_boid **boids){
 	
 	int	i;
@@ -85,6 +101,7 @@ void	draw_boids(t_boid **boids, SDL_Renderer *renderer)
 	int			i;
 	float		angle;
 	t_triangle	tr;
+	t_view		view;
 
 	i = 0;
 	while (boids[i]){
