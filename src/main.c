@@ -1,26 +1,35 @@
 #include "boids.h"
 
-void	refresh(t_global *glb)
+void	refresh(t_global *glb, t_param *param)
 {
 	SDL_SetRenderDrawColor(glb->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(glb->renderer);
 	SDL_SetRenderDrawColor(glb->renderer, 220, 255, 255, 255);
-	boid_update_rand(glb->boids);
+	boid_update_rand(glb->boids, param);
 	draw_boids(glb->boids, glb->renderer);
 	SDL_RenderPresent(glb->renderer);
-	SDL_Delay(5);
+	SDL_Delay(200);
+}
+
+void	param_init(t_param *param)
+{
+	param->all = 0.2;
+	param->coh = 0.1;
+	param->sep = 0.5;
 }
 
 void	run(t_global *glb)
 {
 	t_boolean	run;
+	t_param		param;
 	SDL_Event	event;
 
 	run = true;
+	param_init(&param);
 	while (run)
 	{
 
-		refresh(glb);
+		refresh(glb, &param);
 		while(SDL_PollEvent(&event))
 		{
 			if (event.type == SDL_WINDOWEVENT)

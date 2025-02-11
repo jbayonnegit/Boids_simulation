@@ -1,8 +1,10 @@
 NAME = boids
 SRC =	boids.c \
+		boids_init.c \
 		free.c \
 		main.c \
 		window.c \
+		utils.c \
 
 CFLAGS = -Wall -Wextra -Werror
 CC = cc
@@ -14,7 +16,7 @@ SRCS = $(addprefix $(SRC_DIR)/, $(SRC))
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
 				@mkdir -p $(OBJ_DIR)
-				$(CC) $(CFLAGS) -I. -fsanitize=address -lasan -g3 -c $< -o $@
+				$(CC) $(CFLAGS) -I.  -fsanitize=address -lasan -g3 -c $< -o $@
 
 all : $(NAME)
 
