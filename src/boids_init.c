@@ -1,42 +1,59 @@
 #include "boids.h"
 
-t_boid	**boids_malloc(void){
+void	add_back(t_boid *head, t_boid *new)
+{
+	t_boid	*tmp;
 
-	t_boid **boids;
-	int i;
-
-	srand(time(NULL));
-	boids = malloc(sizeof(t_boid *) * (NB_BOIDS + 1));
-	if (!boids)
-		return (NULL);
-	i = 0;
-	while (i < NB_BOIDS)
+	if (head == NULL)
 	{
-		boids[i] = malloc(sizeof(t_boid));
-		if (!boids[i])
-			return (free_boids_init(boids, i), NULL);
-		i++;
+		head = new;
+		tmp = NULL;
+		fprintf(stderr, "new %p\n", new);				
+		fprintf(stderr, "head %p\n", head);				
+		return ;
 	}
-	return (boids);
+	tmp = head;
+	while (tmp->next != NULL)
+	{
+		tmp = tmp->next;
+	}
+	tmp->next = new;
+	tmp = NULL;
+	return ;
 }
 
-t_boid	**boids_random_init(void){
+t_boid	*new_node(float x, float y, float vx, float vy)
+{
+	t_boid	*new;
 
-	t_boid	**boids;	
+	new = malloc(sizeof(t_boid));
+	if (!new)
+		return (NULL);
+	new->x = x;			
+	new->vx = vx;
+	new->vy = vy;			
+	new->y = y;
+	new->next = NULL;
+	return (new);
+}
+
+t_boid	*boids_random_init(void){
+
+	t_boid	*boids;	
+	t_boid	*tmp;
 	int		i;
 	
-	boids = boids_malloc();
+	boids = new_node((HEIGHT / 2) * (float_rand() * 2) + 100, (WIDTH / 4) * (float_rand() * 2) + 100, float_rand(), float_rand());
 	if (!boids)
 		return (NULL);
 	i = 0;
 	while (i < NB_BOIDS)
 	{
-		boids[i]->x = (HEIGHT / 2) * (float_rand() * 2) + 100;
-		boids[i]->y = (WIDTH / 4) * (float_rand() * 2) + 100;
-		boids[i]->vx = float_rand();
-		boids[i]->vy = float_rand();
+		tmp = new_node((HEIGHT / 2) * (float_rand() * 2) + 100, (WIDTH / 4) * (float_rand() * 2) + 100, float_rand(), float_rand());
+		if (!tmp)
+			return (free_list(boids), NULL);
+		add_back(boids, tmp);
 		i++;
 	}
-	boids[i] = NULL;
 	return (boids);
 }

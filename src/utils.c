@@ -10,43 +10,25 @@ float rand_float_range(float a, float b) {
 	return a + (b - a) * ((float)rand() / (float)RAND_MAX);
 }
 
-void	add_back(t_nb_view *head, t_nb_view *new)
+void	draw_boids(t_boid *boids, SDL_Renderer *renderer)
 {
-	t_nb_view	*tmp;
+	float		angle;
+	t_boid		*tmp;
+	t_triangle	tr;
 
-	if (head == NULL)
-	{
-		head = new;
-		tmp = NULL;
-		return ;
-	}
-	tmp = head;
-	fprintf(stderr, "okokok\n");
-	fprintf(stderr, "adress head = %p | ", head);
-	fprintf(stderr, "adress head next = %p\n", head->next);
-	while (tmp->next != NULL)
-	{
+	tmp = boids;
+	while (tmp){
+		angle = atan2(tmp->vy, tmp->vx);
+
+		tr.p1.x = tmp->x + cos(angle) * 10;
+		tr.p1.y = tmp->y + sin(angle) * 10;
+    	tr.p2.x = tmp->x + cos(angle + 2.5) * 10;
+		tr.p2.y = tmp->y + sin(angle + 2.5) * 10;
+		tr.p3.x = tmp->x + cos(angle - 2.5) * 10;
+		tr.p3.y = tmp->y + sin(angle - 2.5) * 10;
+	    SDL_RenderDrawLine(renderer, tr.p1.x, tr.p1.y, tr.p2.x, tr.p2.y);
+	    SDL_RenderDrawLine(renderer, tr.p2.x, tr.p2.y, tr.p3.x, tr.p3.y);
+	    SDL_RenderDrawLine(renderer, tr.p3.x, tr.p3.y, tr.p1.x, tr.p1.y);
 		tmp = tmp->next;
 	}
-	tmp->next = new;
-	tmp = NULL;
-	return ;
-}
-
-t_nb_view	*new_node(int j)
-{
-	t_nb_view	*new;
-
-	new = malloc(sizeof(t_nb_view));
-	if (!new)
-	{
-		fprintf(stderr, "malloc fail");
-		return (NULL);
-	}
-	new->n = j;
-	new->next = NULL;
-	fprintf(stderr, "adress new = %p | ", new);
-	fprintf(stderr, "adress new next = %p\n", new->next);
-	fprintf(stderr, "alloc pour boid[%d]\n", j);
-	return (new);
 }

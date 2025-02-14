@@ -5,6 +5,8 @@ SRC =	boids.c \
 		main.c \
 		window.c \
 		utils.c \
+		quadtree.c \
+		rules.c \
 
 CFLAGS = -Wall -Wextra -Werror
 CC = cc
