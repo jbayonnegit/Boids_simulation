@@ -7,9 +7,7 @@ void	add_back(t_boid *head, t_boid *new)
 	if (head == NULL)
 	{
 		head = new;
-		tmp = NULL;
-		fprintf(stderr, "new %p\n", new);				
-		fprintf(stderr, "head %p\n", head);				
+		tmp = NULL;		
 		return ;
 	}
 	tmp = head;
@@ -37,22 +35,20 @@ t_boid	*new_node(float x, float y, float vx, float vy)
 	return (new);
 }
 
-t_boid	*boids_random_init(void){
+t_boid	**boids_random_init(void){
 
-	t_boid	*boids;	
-	t_boid	*tmp;
+	t_boid	**boids;	
 	int		i;
-	
-	boids = new_node((HEIGHT / 2) * (float_rand() * 2) + 100, (WIDTH / 4) * (float_rand() * 2) + 100, float_rand(), float_rand());
+
+	boids = malloc(sizeof(t_boid *) * NB_BOIDS);
 	if (!boids)
 		return (NULL);
 	i = 0;
 	while (i < NB_BOIDS)
 	{
-		tmp = new_node((HEIGHT / 2) * (float_rand() * 2) + 100, (WIDTH / 4) * (float_rand() * 2) + 100, float_rand(), float_rand());
-		if (!tmp)
-			return (free_list(boids), NULL);
-		add_back(boids, tmp);
+		boids[i] =  new_node((HEIGHT / 2) * (float_rand() * 2) + 100, (WIDTH / 4) * (float_rand() * 2) + 100, float_rand(), float_rand());
+		if (!boids[i])
+			return (free_boid_init(boids, i), NULL);
 		i++;
 	}
 	return (boids);

@@ -1,6 +1,43 @@
 #include "boids.h"
 
-t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y){
+int	*first_init(int add)
+{
+	int	*new;
+
+	new = malloc(sizeof(int) * 2);
+	if (!new)
+		return (NULL);
+	new[0] = add;
+	new[1] = 0;
+	return (new);
+}
+
+int	*in_view_realloc(int *old, int add, int nb)
+{
+	int	*new;
+	int	i;
+
+	if (!old)
+	{
+		old = first_init(add);
+		if (!old)
+			return (NULL);
+		return (old);
+	}
+	new = malloc(sizeof(int) * nb + 1);
+	if (!new)
+		return (free(old), NULL);
+	while(i < nb - 1)
+	{
+		new[i] = old[i];
+		i++;
+	}
+	new[i] = add;
+	new[i + 1] = 0;
+	return (new);
+}
+
+t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y, int *view){
 
 	t_quad  *new;
 
@@ -12,6 +49,7 @@ t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y){
 	new->SE = NULL;
 	new->SW = NULL;
 	new->in_view = NULL;
+	new->leave = false;
 	new->max.x = max_x;
 	new->max.y = max_y;
 	new->min.x = min_x;
@@ -19,105 +57,35 @@ t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y){
 	return (new);
 }
 
-/*max correspond au coin superieur gauche du quadrant et min au coin inferieur droit du quadrant
-  La liste Boids liste tous les bois present du dans le quadrant parent*/
-
-
-t_boid	*dup_boid(t_boid *boid)
+t_quad  *quadtree(float max_x, float min_x, float max_y, float min_y, t_boid **boids, int *view, int nb_v)
 {
-	t_boid *dup;
+	t_quad	*root;
+	int		c;
+	int		i;
 
-	dup = malloc(sizeof(t_boid));
-	if (!dup)
+	i = 0;
+	c = 0; 
+	root = quadrant_init(max_x, max_y, min_x, min_y, view);
+	if (!root)
 		return (NULL);
-	dup->vx = boid->vx;
-	dup->vy = boid->vy;
-	dup->y= boid->y;
-	dup->x = boid->x;
-	dup->next = NULL;
-	return (dup);
-}
-
-t_boid *list_dup(t_boid *head)
-{
-	t_boid *head_dup;
-	t_boid	*tmp;
-	t_boid	*boid_dup;
-
-	if (!head)
-		return (NULL);
-	tmp = head;
-	head_dup = dup_boid(tmp);
-	if (!head_dup)
-	{
-		return (NULL);
-	}
-	tmp = tmp->next;
-	while (tmp)
-	{
-		boid_dup = dup_boid(tmp);
-		if (!boid_dup)
-			return (NULL);
-		add_back(head_dup, boid_dup);
-		if (!head_dup)
+	while (i < nb_v)
+	{	
+		if ((boids[view[i]]->x <= max_x && boids[view[i]]->x >= min_x) && (boids[view[i]]->y <= max_y && boids[view[i]]->y >= min_y))
 		{
-			fprintf(stderr, "zbi");
+			c++;
+			root->in_view = in_view_realloc(root->in_view, view[i], c);
 		}
-		tmp = tmp->next;
+		i++;
 	}
-	return (head_dup);
-}
-
-t_quad  *quadtree(float max_x, float max_y, float min_x, float min_y, t_boid *Boids)
-{
-	t_quad	*head;
-	t_boid	*in_view_copy;
-	t_boid	*Boids_copy;
-
-	head = quadrant_init(max_x, max_y, min_x, min_y);
-	if (!head)
-		return (NULL);
-	Boids_copy = list_dup(Boids);
-	if (!Boids_copy)
-		return (NULL);
-	head->count = 0; 
-	head->in_view = NULL;
-	in_view_copy = NULL;
-	while (Boids_copy)
+	if (c > QUAD_CAP)
 	{
-		if ((Boids_copy->x >= max_x && Boids_copy->x <= min_x) && (Boids_copy->y >= max_y && Boids_copy->y <= min_y))
-		{
-			if (!head->in_view)
-				head->in_view = dup_boid(Boids);
-			else
-				add_back(head->in_view, dup_boid(Boids_copy));
-			head->count++;
-		}
-		if (head->count > QUAD_CAP)
-		{	
-			in_view_copy = list_dup(head->in_view);
-			if (!in_view_copy)
-				return(NULL);
-			free_list(head->in_view);
-			head->NE = quadtree(max_x / 2, max_y, min_x, min_y / 2, in_view_copy);
-			if (!head->NE)
-				return (NULL);
-			if (head->NE)
-			head->NW = quadtree(max_x, max_y, min_x / 2, min_y / 2, in_view_copy);
-			if (!head->NE)
-				return (NULL);
-			head->SE = quadtree(max_x / 2, max_y / 2, min_x, min_y, in_view_copy);
-			if (!head->NE)
-				return (NULL);
-			head->NE = quadtree(max_x, max_y / 2, min_x / 2, min_y, in_view_copy);
-			if (!head->NE)
-				return (NULL);
-			free_list(Boids_copy);
-			free_list(Boids);
-			break ;
-		}
-		Boids_copy = Boids_copy->next;
+		root->NW = (max_x / 2, min_x, max_y / 2, min_y, boids, root->in_view, c); 
+		root->NE = (max_x, max_x / 2, max_y / 2, min_y, boids, root->in_view, c);
+		root->SW = (max_x / 2, min_x, max_y, max_y / 2, boids, root->in_view, c);
+		root->SE = (max_x, max_x / 2, max_y, max_y / 2, boids, root->in_view, c);
+		free(root->in_view);
 	}
-	fprintf(stderr, "DONE\n");
-	return (head);
+	else
+		root->leave = true;
+	return (root);
 }

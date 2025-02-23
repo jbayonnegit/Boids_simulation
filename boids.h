@@ -13,6 +13,12 @@
 # include <math.h>
 # include <time.h>
 
+typedef enum s_boolean
+{
+	false,
+	true,
+}	t_boolean;
+
 typedef struct s_boid
 {
 	float	x;
@@ -25,10 +31,11 @@ typedef struct s_boid
 
 typedef struct s_quadtree
 {
-	int					count;
 	SDL_Point			min;
 	SDL_Point			max;
-	t_boid				*in_view;
+	t_boolean			leave;
+	int					*in_view;
+	int					nb_in_view;
 	struct s_quadtree	*NW;
 	struct s_quadtree	*NE;
 	struct s_quadtree	*SW;
@@ -83,7 +90,7 @@ float		float_rand(void);
 float		rand_float_range(float a, float b);
 void		add_back(t_boid *head, t_boid *new);
 void		free_list(t_boid *boids);
-t_quad		*quadtree(float max_x, float max_y, float min_x, float min_y, t_boid *Boids);
+t_quad		*quadtree(float max_x, float max_y, float min_x, float min_y, t_boid **boids, int *view, int nb_v);
 t_boid 		*list_dup(t_boid *head);
 void		rules(t_boid *boid, t_boid *neighbor);
 t_boid		*dup_boid(t_boid *boid);
