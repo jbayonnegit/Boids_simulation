@@ -24,9 +24,10 @@ int	*in_view_realloc(int *old, int add, int nb)
 			return (NULL);
 		return (old);
 	}
-	new = malloc(sizeof(int) * nb + 1);
+	new = malloc(sizeof(int) * (nb + 2));
 	if (!new)
 		return (free(old), NULL);
+	i = 0;
 	while(i < nb - 1)
 	{
 		new[i] = old[i];
@@ -37,7 +38,7 @@ int	*in_view_realloc(int *old, int add, int nb)
 	return (new);
 }
 
-t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y, int *view){
+t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y){
 
 	t_quad  *new;
 
@@ -57,15 +58,20 @@ t_quad  *quadrant_init(float max_x, float max_y, float min_x, float min_y, int *
 	return (new);
 }
 
-t_quad  *quadtree(float max_x, float min_x, float max_y, float min_y, t_boid **boids, int *view, int nb_v)
+t_quad  *quadtree(int max_x, int min_x, int max_y, int min_y, t_boid **boids, int *view, int nb_v, int *k)
 {
 	t_quad	*root;
+	int		*tmp;
 	int		c;
 	int		i;
 
 	i = 0;
-	c = 0; 
-	root = quadrant_init(max_x, max_y, min_x, min_y, view);
+	c = 0;
+	*k += 1;
+	//fprintf(stderr, "recurssion\n");
+	if (*k > 1000)
+		return (NULL);
+	root = quadrant_init(max_x, max_y, min_x, min_y);
 	if (!root)
 		return (NULL);
 	while (i < nb_v)
@@ -73,19 +79,24 @@ t_quad  *quadtree(float max_x, float min_x, float max_y, float min_y, t_boid **b
 		if ((boids[view[i]]->x <= max_x && boids[view[i]]->x >= min_x) && (boids[view[i]]->y <= max_y && boids[view[i]]->y >= min_y))
 		{
 			c++;
+			tmp = root->in_view;
 			root->in_view = in_view_realloc(root->in_view, view[i], c);
+			if (tmp)
+				free(tmp);
 		}
 		i++;
 	}
 	if (c > QUAD_CAP)
 	{
-		root->NW = (max_x / 2, min_x, max_y / 2, min_y, boids, root->in_view, c); 
-		root->NE = (max_x, max_x / 2, max_y / 2, min_y, boids, root->in_view, c);
-		root->SW = (max_x / 2, min_x, max_y, max_y / 2, boids, root->in_view, c);
-		root->SE = (max_x, max_x / 2, max_y, max_y / 2, boids, root->in_view, c);
-		free(root->in_view);
+		root->NW = quadtree(max_x / 2, min_x, max_y / 2, min_y, boids, root->in_view, c, k);
+		root->NE = quadtree(max_x, max_x / 2, max_y / 2, min_y, boids, root->in_view, c, k);
+		root->SW = quadtree(max_x / 2, min_x, max_y, max_y / 2, boids, root->in_view, c, k);
+		root->SE = quadtree(max_x, max_x / 2, max_y, max_y / 2, boids, root->in_view, c, k);
 	}
 	else
+	{
 		root->leave = true;
+		root->nb_view = c;
+	}
 	return (root);
 }

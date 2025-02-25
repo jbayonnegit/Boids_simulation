@@ -1,25 +1,5 @@
 #include "boids.h"
 
-void	add_back(t_boid *head, t_boid *new)
-{
-	t_boid	*tmp;
-
-	if (head == NULL)
-	{
-		head = new;
-		tmp = NULL;		
-		return ;
-	}
-	tmp = head;
-	while (tmp->next != NULL)
-	{
-		tmp = tmp->next;
-	}
-	tmp->next = new;
-	tmp = NULL;
-	return ;
-}
-
 t_boid	*new_node(float x, float y, float vx, float vy)
 {
 	t_boid	*new;
@@ -40,7 +20,7 @@ t_boid	**boids_random_init(void){
 	t_boid	**boids;	
 	int		i;
 
-	boids = malloc(sizeof(t_boid *) * NB_BOIDS);
+	boids = malloc(sizeof(t_boid *) * (NB_BOIDS + 1));
 	if (!boids)
 		return (NULL);
 	i = 0;
@@ -51,5 +31,6 @@ t_boid	**boids_random_init(void){
 			return (free_boid_init(boids, i), NULL);
 		i++;
 	}
+	boids[i] = NULL;
 	return (boids);
 }

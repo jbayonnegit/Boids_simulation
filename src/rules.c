@@ -1,85 +1,116 @@
 #include "boids.h"
 
-void    get_allignement(t_rules *rules, t_boid *in_view)
+void    get_allignement(t_rules *rules,t_boid **boid, int *in_view, int nb)
 {
-	t_boid *tmp;
 	int		c;
 
-	tmp = in_view;
 	c = 0;
 	rules->all_x = 0;
 	rules->all_y = 0;
-	while (tmp)
+	if (nb == 0)
+		return ;
+	while (c < nb)
 	{
-		rules->all_x += tmp->vx;
-		rules->all_y += tmp->vy;
+		rules->all_x += boid[in_view[c]]->vx;
+		rules->all_y += boid[in_view[c]]->vy;
 		c++;
-		tmp = tmp->next;
 	}
-	rules->all_x /= c;
-	rules->all_y /= c;
+	rules->all_x /= nb;
+	rules->all_y /= nb;
 }
 
-void	get_cohesion(t_rules *rules, t_boid *in_view)
+void	get_cohesion(t_rules *rules,t_boid **boid, int *in_view, int nb)
 {
-	t_boid *tmp;
 	int		c;
 
-	tmp = in_view;
 	c = 0;
 	rules->coh_x = 0;
 	rules->coh_y = 0;
-	while (tmp)
+	if (nb == 0)
+		return ;
+	while (c < nb)
 	{
-		rules->coh_x += tmp->x;
-		rules->coh_y += tmp->y;
+		rules->coh_x += boid[in_view[c]]->x;
+		rules->coh_y += boid[in_view[c]]->y;
 		c++;
-		tmp = tmp->next;
 	}
-	rules->coh_x /= c;
-	rules->coh_y /= c;
+	rules->coh_x /= nb;
+	rules->coh_y /= nb;
 }
 
-void	get_separation(t_rules *rules, t_boid *in_view, t_boid *boid)
+void	get_separation(t_rules *rules, t_boid **boids, t_boid *boid, int *in_view, int nb)
 {
-	t_boid	*tmp;
 	float	distance;
+	int 	c;
 
-	tmp = in_view;
+	c = 0;
 	rules->sep_x = 0;
 	rules->sep_y = 0;
-	while (tmp)
+	while (c < nb)
 	{
-		distance = sqrtf(powf(tmp->x - boid->x, 2) + powf(tmp->x - boid->x, 2));
-		if (distance < 5)
+		distance = sqrtf(powf(boids[in_view[c]]->x - boid->x, 2) + powf(boids[in_view[c]]->x - boid->x, 2));
+		if (distance < 15)
 		{
-			rules->sep_x += -(tmp->x - boid->x);
-			rules->sep_y += -(tmp->y - boid->y);
+			rules->sep_x += (boid->x - boids[in_view[c]]->x);
+			rules->sep_y += (boid->y - boids[in_view[c]]->y);
 		}
-		tmp = tmp->next;
+		c++;
 	}
 }
 
-void	rules(t_boid *boid, t_boid *neighbor)
+void	rules(t_boid **boids, t_boid *boid, int *neighbor, int nb)
 {
-	t_boid	*in_view;
-	t_boid	*tmp;
 	t_rules	rules;
-	float	distance;
+	float	 speed;
+	float	turnfactor;
 
-	in_view = NULL;
-	tmp = neighbor;
-	while (tmp)
+	turnfactor = 0.2;
+	get_allignement(&rules, boids, neighbor, nb);
+	get_separation(&rules, boids, boid, neighbor, nb);
+	get_cohesion(&rules, boids, neighbor, nb);
+	// fprintf(stderr, "coh : %f, %f\n", rules.coh_x, rules.coh_y);
+	// fprintf(stderr, "all : %f, %f\n", rules.all_x, rules.all_y);
+	// fprintf(stderr, "sep : %f, %f\n", rules.sep_x, rules.sep_y);
+	boid->vx += ((rules.all_x - boid->vx) * 0.2) + ((rules.coh_x - boid->x ) * 0.005) + (rules.sep_x * 0.15);
+	boid->vy += ((rules.all_y - boid->vy) * 0.2) + ((rules.coh_y - boid->y ) * 0.005) + (rules.sep_y * 0.15);
+	if (boid->x < 100)
+		boid->vx = boid->vx + turnfactor;
+	if (boid->x > WIDTH - 100)
+    	boid->vx = -boid->vx;
+	if (boid->y > HEIGHT - 100)
+    	boid->vy = boid->vy - turnfactor;
+	if (boid->y < 100)
+    	boid->vy = boid->vy + turnfactor;
+	
+	speed = sqrtf(boid->vx * boid->vx + boid->vy * boid->vy);
+	if (speed > V_MAX)
 	{
-		distance = sqrtf(powf(tmp->x - boid->x, 2) + powf(tmp->x - boid->x, 2));
-		if (distance < D_MIN)
-			add_back(in_view, dup_boid(neighbor));
-		tmp = tmp->next;
+	    boid->vx = (boid->vx / speed) * V_MAX;
+	    boid->vy = (boid->vy / speed) * V_MAX;
 	}
-	get_allignement(&rules, in_view);
-	get_separation(&rules, in_view, boid);
-	get_cohesion(&rules, in_view);
-	boid->vx += (rules.all_x * 0.5) + (rules.coh_x * 0.3) + (rules.sep_x * 0.1);
-	boid->vy += (rules.all_y * 0.5) + (rules.coh_y * 0.3) + (rules.sep_y * 0.1);
-	free_list(in_view);
+	if (speed < V_MIN)
+	{
+	    boid->vx = (boid->vx / speed) * V_MIN;
+	    boid->vy = (boid->vy / speed) * V_MIN;
+	}
+	boid->x += boid->vx;
+	boid->y += boid->vy;
 }
+
+/*	if ((boid->x +  boid->vx) > WIDTH - 10){
+		boid->vx = -boid->vx;
+		boid->vy = rand_float_range(-1.0f, 1.0f);
+	}
+	else if ((boid->y + boid->vy) > HEIGHT - 10){
+		boid->vy = -boid->vy;
+		boid->vx = rand_float_range(-1.0f, 1.0f);
+	}
+	else if ((boid->x + boid->vx) < 0 + 10){
+		boid->vx = -boid->vx;
+		boid->vy = rand_float_range(-1.0f, 1.0f);
+	}
+	else if ((boid->y + boid->vy) < 0 + 10){
+		boid->vy = -boid->vy;
+		boid->vx = rand_float_range(-1.0f, 1.0f);
+	}
+*/

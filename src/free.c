@@ -1,31 +1,39 @@
 #include "boids.h"
 
-
-void	free_list(t_boid *boids)
+void	free_boid_init(t_boid **boid, int i)
 {
-	t_boid *tmp;
+	int	c;
 
-	tmp = boids->next;
-	while(tmp->next)
+	c = 0;
+	while (c < i)
 	{
-		free(boids);
-		boids = tmp;
-		tmp = tmp->next;
+		free(boid[c]);
+		c++;
 	}
-	free(tmp);
-	boids = NULL;
-	tmp = NULL;
+	free(boid);
+}
+
+void	free_boid(t_boid **boid)
+{
+	int	i;
+
+	i = 0;
+	while (boid[i])
+	{
+		free(boid[i]);
+		i++;
+	}
+	free(boid);
 }
 
 void	free_glb(t_global *glb)
 {
-	free_list(glb->boids);
+	free_boid(glb->boids);
 	free(glb);
 }
 
 void	window_clear(t_global *glb)
 {
-	free_list(glb->boids);
 	SDL_DestroyRenderer(glb->renderer);
 	SDL_DestroyWindow(glb->window);
 	free(glb);
