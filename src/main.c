@@ -1,14 +1,45 @@
 #include "boids.h"
 
+void	draw_tree(t_quad *root, t_global *glb)
+{
+	SDL_Rect	quad;
+
+	quad.x = root->min.x;
+	quad.y = root->min.y;
+	quad.w = root->max.x;
+	quad.h = root->max.y;
+	SDL_SetRenderDrawColor(glb->renderer, 50, 255, 0, 255);
+	SDL_RenderDrawRect(glb->renderer, &quad);
+	if (root->leave == true)
+	{
+		return ;
+	}
+	else
+	{
+		if (root->NW)
+			draw_tree(root->NW, glb);
+		if (root->NE)
+			draw_tree(root->NE, glb);
+		if (root->SW)
+			draw_tree(root->SW, glb);
+		if (root->SE)
+			draw_tree(root->SE, glb);
+	}
+}
+
 void	refresh(t_global *glb)
 {
+	t_quad	*root;
+
 	SDL_SetRenderDrawColor(glb->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(glb->renderer);
+	root = update_boids(glb->boids);
+	//draw_tree(root, glb);
+	(void)root;
 	SDL_SetRenderDrawColor(glb->renderer, 220, 255, 255, 255);
-	update_boids(glb->boids);
 	draw_boids(glb->boids, glb->renderer);
 	SDL_RenderPresent(glb->renderer);
-	SDL_Delay(50);
+	SDL_Delay(30);
 }
 
 void	param_init(t_param *param)

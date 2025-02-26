@@ -67,10 +67,8 @@ t_quad  *quadtree(int max_x, int min_x, int max_y, int min_y, t_boid **boids, in
 
 	i = 0;
 	c = 0;
-	*k += 1;
-	//fprintf(stderr, "recurssion\n");
-	if (*k > 1000)
-		return (NULL);
+	 if (*k >= NB_BOIDS)
+	 	return (NULL);
 	root = quadrant_init(max_x, max_y, min_x, min_y);
 	if (!root)
 		return (NULL);
@@ -88,13 +86,18 @@ t_quad  *quadtree(int max_x, int min_x, int max_y, int min_y, t_boid **boids, in
 	}
 	if (c > QUAD_CAP)
 	{
-		root->NW = quadtree(max_x / 2, min_x, max_y / 2, min_y, boids, root->in_view, c, k);
-		root->NE = quadtree(max_x, max_x / 2, max_y / 2, min_y, boids, root->in_view, c, k);
-		root->SW = quadtree(max_x / 2, min_x, max_y, max_y / 2, boids, root->in_view, c, k);
-		root->SE = quadtree(max_x, max_x / 2, max_y, max_y / 2, boids, root->in_view, c, k);
+		int mid_x = (max_x + min_x) / 2;
+		int mid_y = (max_y + min_y) / 2;
+
+		root->NW = quadtree(mid_x, min_x, mid_y, min_y, boids, root->in_view, c, k);
+		root->NE = quadtree(max_x, mid_x, mid_y, min_y, boids, root->in_view, c, k);
+		root->SW = quadtree(mid_x, min_x, max_y, mid_y, boids, root->in_view, c, k);
+		root->SE = quadtree(max_x, mid_x, max_y, mid_y, boids, root->in_view, c, k);
+		free(root->in_view);
 	}
 	else
 	{
+		*k += c;
 		root->leave = true;
 		root->nb_view = c;
 	}

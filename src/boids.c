@@ -39,7 +39,6 @@ int	*find_neighbor(t_quad *root, float x, float y, float r, int *neighbor, int *
 	int		i;
 	int		d;
 	int		*tmp;
-	//float	angle;
 
 	i = 0;
 	d = 0;
@@ -52,8 +51,7 @@ int	*find_neighbor(t_quad *root, float x, float y, float r, int *neighbor, int *
 		while (i < root->nb_view)
 		{
 			d = distance_euclidienne(x, y, boid[root->in_view[i]]->x, boid[root->in_view[i]]->y);
-		//	angle = get_angle(boidi, boid[root->in_view[i]]);
-			if (d <= r )
+			if (d <= r)
 			{
 				*count += 1;
 				tmp = neighbor;
@@ -98,7 +96,7 @@ int	*view_init_first(void)
 	return (view_init);
 }
 
-void    update_boids(t_boid **boid)
+t_quad    *update_boids(t_boid **boid)
 {
 	int		*neighbor;
 	int		*view_init;
@@ -111,16 +109,18 @@ void    update_boids(t_boid **boid)
 	view_init = view_init_first();
 	root = quadtree(WIDTH, 0, HEIGHT, 0, boid, view_init, NB_BOIDS, &k);
 	if (!root)
-		return ;
+		return (NULL);
+	fprintf(stderr, "ROOT : %p\n", root);
 	i = 0;
 	while (i < NB_BOIDS)
 	{
 		c = 0;
 		neighbor = NULL;
-		fprintf(stderr, "BOIDS[%d]\n", i);
+		fprintf(stderr, "newboid\n");
 		neighbor = find_neighbor(root, boid[i]->x, boid[i]->y, D_MIN, NULL, &c, boid, boid[i]);
 		rules(boid, boid[i], neighbor, c);
 		free(neighbor);
 		i++;
 	}
+	return (root);
 }

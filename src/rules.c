@@ -49,7 +49,7 @@ void	get_separation(t_rules *rules, t_boid **boids, t_boid *boid, int *in_view, 
 	while (c < nb)
 	{
 		distance = sqrtf(powf(boids[in_view[c]]->x - boid->x, 2) + powf(boids[in_view[c]]->x - boid->x, 2));
-		if (distance < 15)
+		if (distance < 8)
 		{
 			rules->sep_x += (boid->x - boids[in_view[c]]->x);
 			rules->sep_y += (boid->y - boids[in_view[c]]->y);
@@ -64,22 +64,22 @@ void	rules(t_boid **boids, t_boid *boid, int *neighbor, int nb)
 	float	 speed;
 	float	turnfactor;
 
-	turnfactor = 0.2;
+	turnfactor = 0.5;
 	get_allignement(&rules, boids, neighbor, nb);
 	get_separation(&rules, boids, boid, neighbor, nb);
 	get_cohesion(&rules, boids, neighbor, nb);
 	// fprintf(stderr, "coh : %f, %f\n", rules.coh_x, rules.coh_y);
 	// fprintf(stderr, "all : %f, %f\n", rules.all_x, rules.all_y);
 	// fprintf(stderr, "sep : %f, %f\n", rules.sep_x, rules.sep_y);
-	boid->vx += ((rules.all_x - boid->vx) * 0.2) + ((rules.coh_x - boid->x ) * 0.005) + (rules.sep_x * 0.15);
-	boid->vy += ((rules.all_y - boid->vy) * 0.2) + ((rules.coh_y - boid->y ) * 0.005) + (rules.sep_y * 0.15);
-	if (boid->x < 100)
+	boid->vx += ((rules.all_x - boid->vx) * 0.7) + ((rules.coh_x - boid->x ) * 0.02) + (rules.sep_x * 0.15);
+	boid->vy += ((rules.all_y - boid->vy) * 0.7) + ((rules.coh_y - boid->y ) * 0.02) + (rules.sep_y * 0.15);
+	if (boid->x + boid->vx < 100)
 		boid->vx = boid->vx + turnfactor;
-	if (boid->x > WIDTH - 100)
+	if (boid->x + boid->vx> WIDTH - 100)
     	boid->vx = -boid->vx;
-	if (boid->y > HEIGHT - 100)
+	if (boid->y + boid->vy > HEIGHT - 100)
     	boid->vy = boid->vy - turnfactor;
-	if (boid->y < 100)
+	if (boid->y + boid->vy < 100)
     	boid->vy = boid->vy + turnfactor;
 	
 	speed = sqrtf(boid->vx * boid->vx + boid->vy * boid->vy);

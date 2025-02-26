@@ -1,13 +1,13 @@
 #ifndef BOIDS_H
 # define BOIDS_H
 
-# define V_MAX 8
+# define V_MAX 7
 # define V_MIN 3
 # define NB_BOIDS 1000
-# define HEIGHT 2000
-# define WIDTH 2000
+# define HEIGHT 1080
+# define WIDTH 1920
 # define M_PI 3.14159265358979323846
-# define D_MIN 15
+# define D_MIN 20
 # define QUAD_CAP 30
 # include <SDL2/SDL.h>
 # include <stdlib.h>
@@ -87,7 +87,7 @@ int			*in_view_realloc(int *old, int add, int nb);
 void		rules(t_boid **boids, t_boid *boid, int *neighbor, int nb);
 t_boid		*dup_boid(t_boid *boid);
 float 		rand_float_range(float a, float b);
-void   		update_boids(t_boid **boids);
+t_quad   	*update_boids(t_boid **boids);
 void		free_boid_init(t_boid **boid, int i);
 
 #endif
