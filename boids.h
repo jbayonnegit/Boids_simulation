@@ -1,14 +1,14 @@
 #ifndef BOIDS_H
 # define BOIDS_H
 
-# define V_MAX 7
+# define V_MAX 8
 # define V_MIN 3
 # define NB_BOIDS 1000
 # define HEIGHT 1080
 # define WIDTH 1920
 # define M_PI 3.14159265358979323846
-# define D_MIN 20
-# define QUAD_CAP 30
+# define D_MIN 100
+# define QUAD_CAP 40
 # include <SDL2/SDL.h>
 # include <stdlib.h>
 # include <math.h>
@@ -25,9 +25,7 @@ typedef struct s_boid
 	float	x;
 	float	y;
 	float	vx;
-	float	vy;
-	struct s_boid *next;
-	
+	float	vy;	
 }				t_boid;
 
 typedef struct s_quadtree
@@ -89,5 +87,6 @@ t_boid		*dup_boid(t_boid *boid);
 float 		rand_float_range(float a, float b);
 t_quad   	*update_boids(t_boid **boids);
 void		free_boid_init(t_boid **boid, int i);
+void		free_tree(t_quad *root);
 
 #endif

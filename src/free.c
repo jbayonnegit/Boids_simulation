@@ -1,5 +1,32 @@
 #include "boids.h"
 
+void	free_tree(t_quad *root)
+{
+	if (root->leave)
+		free(root->in_view);
+	if (root->NE)
+	{
+		free_tree(root->NE);
+		root->NE = NULL;
+	}
+	if (root->NW)
+	{
+		free_tree(root->NW);
+		root->NE = NULL;
+	}
+	if (root->SE)
+	{
+		free_tree(root->SE);
+		root->NE = NULL;
+	}
+	if (root->SW)
+	{
+		free_tree(root->SW);
+		root->NE = NULL;
+	}
+	free(root);
+}
+
 void	free_boid_init(t_boid **boid, int i)
 {
 	int	c;
@@ -18,7 +45,7 @@ void	free_boid(t_boid **boid)
 	int	i;
 
 	i = 0;
-	while (boid[i])
+	while (i < NB_BOIDS)
 	{
 		free(boid[i]);
 		i++;
@@ -32,73 +59,10 @@ void	free_glb(t_global *glb)
 	free(glb);
 }
 
-// void	free_quad(t_quad *root)
-// {
-// 	t_quad	*tmp;
-// 	t_quad	*head;
-
-// 	head = root;
-// 	while(root->NE)
-// 	{
-// 		tmp = root;
-// 		root = root->NE;
-// 		if (root->leave == true)
-// 		{
-// 			tmp->leave == true;
-// 			free(root->in_view);
-// 			free(root);		
-// 		}
-// 		root = head;
-// 	}
-// 	while(root->NW)
-// 	{
-// 		tmp = root;
-// 		root = root->NW;
-// 		if (root->leave == true)
-// 		{
-// 			tmp->leave == true;
-// 			free(root->in_view);
-// 			free(root);		
-// 		}		root = head;
-// 	}
-// 	while(root->SE)
-// 	{
-// 		tmp = root;
-// 		root = root->SE;
-// 		if (root->leave == true)
-// 		{
-// 			tmp->leave == true;
-// 			free(root->in_view);
-// 			free(root);		
-// 		}		root = head;
-// 	}
-// 	while(root->SW)
-// 	{
-// 		tmp = root;
-// 		root = root->SW;
-// 		if (root->leave == true)
-// 		{
-// 			tmp->leave == true;
-// 			free(root->in_view);
-// 			free(root);		
-// 		}
-// 		root = head;
-// 	}
-// 	if (root->in_view)
-// 		free(root->in_view);
-// 	free(root);
-// 	root = NULL;
-// }
-
-// void	free_tree(t_quad *root)
-// {
-
-// }
-
 void	window_clear(t_global *glb)
 {
 	SDL_DestroyRenderer(glb->renderer);
 	SDL_DestroyWindow(glb->window);
-	free(glb);
+	free_glb(glb);
 	SDL_Quit();
 }

@@ -11,7 +11,6 @@ t_boid	*new_node(float x, float y, float vx, float vy)
 	new->vx = vx;
 	new->vy = vy;			
 	new->y = y;
-	new->next = NULL;
 	return (new);
 }
 

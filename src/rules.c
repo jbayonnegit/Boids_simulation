@@ -68,11 +68,8 @@ void	rules(t_boid **boids, t_boid *boid, int *neighbor, int nb)
 	get_allignement(&rules, boids, neighbor, nb);
 	get_separation(&rules, boids, boid, neighbor, nb);
 	get_cohesion(&rules, boids, neighbor, nb);
-	// fprintf(stderr, "coh : %f, %f\n", rules.coh_x, rules.coh_y);
-	// fprintf(stderr, "all : %f, %f\n", rules.all_x, rules.all_y);
-	// fprintf(stderr, "sep : %f, %f\n", rules.sep_x, rules.sep_y);
-	boid->vx += ((rules.all_x - boid->vx) * 0.7) + ((rules.coh_x - boid->x ) * 0.02) + (rules.sep_x * 0.15);
-	boid->vy += ((rules.all_y - boid->vy) * 0.7) + ((rules.coh_y - boid->y ) * 0.02) + (rules.sep_y * 0.15);
+	boid->vx += ((rules.all_x - boid->vx) * 0.6) + ((rules.coh_x - boid->x ) * 0.005) + (rules.sep_x * 0.008);
+	boid->vy += ((rules.all_y - boid->vy) * 0.6) + ((rules.coh_y - boid->y ) * 0.005) + (rules.sep_y * 0.008);
 	if (boid->x + boid->vx < 100)
 		boid->vx = boid->vx + turnfactor;
 	if (boid->x + boid->vx> WIDTH - 100)
@@ -96,21 +93,3 @@ void	rules(t_boid **boids, t_boid *boid, int *neighbor, int nb)
 	boid->x += boid->vx;
 	boid->y += boid->vy;
 }
-
-/*	if ((boid->x +  boid->vx) > WIDTH - 10){
-		boid->vx = -boid->vx;
-		boid->vy = rand_float_range(-1.0f, 1.0f);
-	}
-	else if ((boid->y + boid->vy) > HEIGHT - 10){
-		boid->vy = -boid->vy;
-		boid->vx = rand_float_range(-1.0f, 1.0f);
-	}
-	else if ((boid->x + boid->vx) < 0 + 10){
-		boid->vx = -boid->vx;
-		boid->vy = rand_float_range(-1.0f, 1.0f);
-	}
-	else if ((boid->y + boid->vy) < 0 + 10){
-		boid->vy = -boid->vy;
-		boid->vx = rand_float_range(-1.0f, 1.0f);
-	}
-*/

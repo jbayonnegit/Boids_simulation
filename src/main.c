@@ -34,8 +34,9 @@ void	refresh(t_global *glb)
 	SDL_SetRenderDrawColor(glb->renderer, 0, 0, 0, 255);
 	SDL_RenderClear(glb->renderer);
 	root = update_boids(glb->boids);
-	//draw_tree(root, glb);
-	(void)root;
+	draw_tree(root, glb);
+	free_tree(root);
+	root = NULL;
 	SDL_SetRenderDrawColor(glb->renderer, 220, 255, 255, 255);
 	draw_boids(glb->boids, glb->renderer);
 	SDL_RenderPresent(glb->renderer);

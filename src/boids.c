@@ -100,6 +100,7 @@ t_quad    *update_boids(t_boid **boid)
 {
 	int		*neighbor;
 	int		*view_init;
+	int		*tmp;
 	int		c;
 	t_quad	*root;
 	int		i;
@@ -107,20 +108,20 @@ t_quad    *update_boids(t_boid **boid)
 
 	k = 0;
 	view_init = view_init_first();
+	tmp = view_init;
 	root = quadtree(WIDTH, 0, HEIGHT, 0, boid, view_init, NB_BOIDS, &k);
 	if (!root)
 		return (NULL);
-	fprintf(stderr, "ROOT : %p\n", root);
 	i = 0;
 	while (i < NB_BOIDS)
 	{
 		c = 0;
 		neighbor = NULL;
-		fprintf(stderr, "newboid\n");
 		neighbor = find_neighbor(root, boid[i]->x, boid[i]->y, D_MIN, NULL, &c, boid, boid[i]);
 		rules(boid, boid[i], neighbor, c);
 		free(neighbor);
 		i++;
 	}
+	free(tmp);
 	return (root);
 }
