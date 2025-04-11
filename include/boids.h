@@ -1,15 +1,15 @@
 #ifndef BOIDS_H
 # define BOIDS_H
 
-# define V_MAX 8
-# define V_MIN 3
-# define NB_BOIDS 1000
-# define HEIGHT 1080
-# define WIDTH 1920
+# define V_MAX 4
+# define V_MIN 1
+# define NB_BOIDS 2000
+# define HEIGHT 900
+# define WIDTH 1440
 # define M_PI 3.14159265358979323846
-# define D_MIN 100
-# define QUAD_CAP 40
-# include <SDL2/SDL.h>
+# define D_MIN 10
+# define QUAD_CAP 50
+# include </opt/homebrew/include/SDL2/SDL.h>
 # include <stdlib.h>
 # include <math.h>
 # include <time.h>

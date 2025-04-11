@@ -64,19 +64,21 @@ void	rules(t_boid **boids, t_boid *boid, int *neighbor, int nb)
 	float	 speed;
 	float	turnfactor;
 
-	turnfactor = 0.5;
+	turnfactor = 0.2;
 	get_allignement(&rules, boids, neighbor, nb);
 	get_separation(&rules, boids, boid, neighbor, nb);
 	get_cohesion(&rules, boids, neighbor, nb);
-	boid->vx += ((rules.all_x - boid->vx) * 0.6) + ((rules.coh_x - boid->x ) * 0.005) + (rules.sep_x * 0.008);
-	boid->vy += ((rules.all_y - boid->vy) * 0.6) + ((rules.coh_y - boid->y ) * 0.005) + (rules.sep_y * 0.008);
-	if (boid->x + boid->vx < 100)
+	boid->vx -= 0.02;
+	boid->vy -= 0.02;
+	boid->vx += ((rules.all_x - boid->vx) * 0.4) + ((rules.coh_x - boid->x ) * 0.001) + (rules.sep_x * 0.050);
+	boid->vy += ((rules.all_y - boid->vy) * 0.4) + ((rules.coh_y - boid->y ) * 0.001) + (rules.sep_y * 0.050);
+	if (boid->x + boid->vx < 150)
 		boid->vx = boid->vx + turnfactor;
-	if (boid->x + boid->vx> WIDTH - 100)
-    	boid->vx = -boid->vx;
-	if (boid->y + boid->vy > HEIGHT - 100)
+	if (boid->x + boid->vx> WIDTH - 200)
+    	boid->vx -= turnfactor;
+	if (boid->y + boid->vy > HEIGHT - 300)
     	boid->vy = boid->vy - turnfactor;
-	if (boid->y + boid->vy < 100)
+	if (boid->y + boid->vy < 300)
     	boid->vy = boid->vy + turnfactor;
 	
 	speed = sqrtf(boid->vx * boid->vx + boid->vy * boid->vy);

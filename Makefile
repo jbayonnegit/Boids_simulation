@@ -8,8 +8,9 @@ SRC =	boids.c \
 		quadtree.c \
 		rules.c \
 
-CFLAGS = -Wall -Wextra -Werror
 CC = cc
+CFLAGS = -Wall -Wextra -Iinclude -I/opt/homebrew/include/SDL2
+LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lm
 OBJ_DIR = obj
 SRC_DIR = src
 
@@ -17,20 +18,20 @@ OBJS = $(addprefix $(OBJ_DIR)/, $(SRC:%.c=%.o))
 SRCS = $(addprefix $(SRC_DIR)/, $(SRC))
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c
-				@mkdir -p $(OBJ_DIR)
-				$(CC) $(CFLAGS) -I. -g3 -c $< -o $@
+	@mkdir -p $(OBJ_DIR)
+	$(CC) $(CFLAGS) -g3 -c $< -o $@
 
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-		$(CC) $(OBJS) -o $(NAME) $(CFLAGS) -lSDL2 -g3 -lm
+	$(CC) $(OBJS) -o $(NAME) $(LDFLAGS) -g3
 
 clean :
-		rm -f -r $(OBJ_DIR)
+	rm -f -r $(OBJ_DIR)
 
 fclean : clean
-		rm -f $(NAME)
+	rm -f $(NAME)
 
 re : fclean all
 
-.PHONY : fclean clean all ren
+.PHONY : fclean clean all re
